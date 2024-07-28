@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO LIST</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #e0f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        section:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #00796b;
+        }
+
+        /* Form Styles */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .todo {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #input-field {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #00796b;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+        }
+
+        #input-field:focus {
+            border-color: #004d40;
+            outline: none;
+        }
+
+        #btn1 {
+            padding: 12px;
+            font-size: 16px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-weight: 600;
+        }
+
+        #btn1:hover {
+            background-color: #004d40;
+            transform: translateY(-2px);
+        }
+
+        /* To-Do List Styles */
+        .todo-list-element {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 2px solid #b2dfdb;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #f1f8e9;
+        }
+
+        .todo-item {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #b2dfdb;
+            border-radius: 8px;
+            background-color: #e0f2f1;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .todo-item:hover {
+            background-color: #b2dfdb;
+            border-color: #004d40;
+        }
+
+        .todo-item button {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .todo-item button:hover {
+            background-color: #b71c1c;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <section>
+        <h1 id="head">TODO LIST</h1>
+        <form>
+            <div class="todo">
+                <input type="text" id="input-field" />
+                <button id="btn1">Click to add new items</button>
+                <div class="todo-list-element"></div>
+            </div>
+        </form>
+    </section>
+
+    <script>
+        // Function to get to-do items from local storage
+        function getTodos() {
+            return new Set(JSON.parse(localStorage.getItem('todos')) || []);
+        }
+
+        // Function to save to-do items to local storage
+        function saveTodos(todos) {
+            localStorage.setItem('todos', JSON.stringify([...todos]));
+        }
+
+        // Function to render to-do items
+        function renderTodos() {
+            const todos = getTodos();
+            const todoListElement = document.querySelector('.todo-list-element');
+            todoListElement.innerHTML = '';
+
+            todos.forEach(todo => {
+                const newTodoDiv = document.createElement('div');
+                newTodoDiv.classList.add('todo-item');
+                newTodoDiv.innerHTML = `<p>${todo}</p><button>Delete</button>`;
+                newTodoDiv.querySelector('button').addEventListener('click', function() {
+                    const todos = getTodos();
+                    todos.delete(todo);
+                    saveTodos(todos);
+                    renderTodos();
+                });
+                todoListElement.appendChild(newTodoDiv);
+            });
+        }
+
+        // Initial rendering of to-do items
+        renderTodos();
+
+        // Add event listener to the add button
+        document.getElementById('btn1').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            const inputField = document.getElementById('input-field');
+            const inputValue = inputField.value.trim();
+
+            if (inputValue) {
+                const todos = getTodos();
+                todos.add(inputValue);
+                saveTodos(todos);
+                renderTodos();
+                console.log([...todos]); // Log to-do items in the console as an array
+                inputField.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
